@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.API", "CodeLeap.API\CodeLeap.API.csproj", "{3EEB3C7D-C424-4F94-B099-B9F404F58138}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.Domain", "CodeLeap.Domain\CodeLeap.Domain.csproj", "{AB44D8B8-4D56-42AA-9927-413AB7C4AABB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.Application", "CodeLeap.Application\CodeLeap.Application.csproj", "{5A41E510-5B37-414F-B60F-057F02561719}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.Infrastructure", "CodeLeap.Infrastructure\CodeLeap.Infrastructure.csproj", "{50D82C3B-62DE-434E-A254-E849F5A0EDDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.UnitTests", "CodeLeap.UnitTests\CodeLeap.UnitTests.csproj", "{BFE91491-D451-441E-933B-35B1A9AB080E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeLeap.IntegrationTests", "CodeLeap.IntegrationTests\CodeLeap.IntegrationTests.csproj", "{9A808170-9240-43EB-A622-BE777518790A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EEB3C7D-C424-4F94-B099-B9F404F58138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EEB3C7D-C424-4F94-B099-B9F404F58138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EEB3C7D-C424-4F94-B099-B9F404F58138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EEB3C7D-C424-4F94-B099-B9F404F58138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB44D8B8-4D56-42AA-9927-413AB7C4AABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB44D8B8-4D56-42AA-9927-413AB7C4AABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB44D8B8-4D56-42AA-9927-413AB7C4AABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB44D8B8-4D56-42AA-9927-413AB7C4AABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A41E510-5B37-414F-B60F-057F02561719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A41E510-5B37-414F-B60F-057F02561719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A41E510-5B37-414F-B60F-057F02561719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A41E510-5B37-414F-B60F-057F02561719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D82C3B-62DE-434E-A254-E849F5A0EDDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D82C3B-62DE-434E-A254-E849F5A0EDDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D82C3B-62DE-434E-A254-E849F5A0EDDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D82C3B-62DE-434E-A254-E849F5A0EDDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFE91491-D451-441E-933B-35B1A9AB080E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFE91491-D451-441E-933B-35B1A9AB080E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFE91491-D451-441E-933B-35B1A9AB080E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFE91491-D451-441E-933B-35B1A9AB080E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A808170-9240-43EB-A622-BE777518790A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A808170-9240-43EB-A622-BE777518790A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A808170-9240-43EB-A622-BE777518790A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A808170-9240-43EB-A622-BE777518790A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05E76180-4307-49E4-ADD0-FE4BF4D6B2B9}
+	EndGlobalSection
+EndGlobal

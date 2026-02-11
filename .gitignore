@@ -1,0 +1,36 @@
+# Visual Studio
+.vs/
+.vscode/
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET
+appsettings.Development.json
+
+# Others
+*.db
+*.sqlite
