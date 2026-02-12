@@ -20,32 +20,37 @@ namespace CodeLeap.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _logger.LogInformation("Register attempt for email: {Email}", request.Email);
 
             var result = await _userService.Register(request);
-
-            _logger.LogInformation("User registered successfully: {Email}", request.Email);
 
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _logger.LogInformation("Login attempt for email: {Email}", request.Email);
 
             var result = await _userService.Login(request);
-
-            _logger.LogInformation("User logged in successfully: {Email}", request.Email);
 
             return Ok(result);
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh(RefreshRequest request)
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var result = await _userService.RefreshToken(request.RefreshToken);
@@ -59,9 +64,9 @@ namespace CodeLeap.API.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout(RefreshRequest request)
+        public async Task<IActionResult> Logout([FromBody] RefreshRequest request)
         {
-            if (string.IsNullOrEmpty(request.RefreshToken))
+            if (string.IsNullOrWhiteSpace(request.RefreshToken))
                 return BadRequest("Refresh token is required");
 
             try

@@ -13,6 +13,7 @@ namespace CodeLeap.UnitTests
         private readonly Mock<IProductRepository> _repoMock;
         private readonly Mock<ILogger<ProductService>> _loggerMock;
         private readonly ProductService _service;
+        private readonly string _imgTest = "http://test.com";
 
         public ProductServiceTests()
         {
@@ -29,8 +30,8 @@ namespace CodeLeap.UnitTests
         {
             var products = new List<Product>
             {
-                new Product("A", "Desc A", "urlA"),
-                new Product("B", "Desc B", "urlB")
+                new Product("A", "Desc A", _imgTest),
+                new Product("B", "Desc B", _imgTest)
             };
 
             _repoMock
@@ -46,7 +47,7 @@ namespace CodeLeap.UnitTests
         [Fact]
         public async Task GetById_ShouldReturnProduct_WhenExists()
         {
-            var product = new Product("A", "Desc", "url");
+            var product = new Product("A", "Desc", _imgTest);
 
             _repoMock
                 .Setup(x => x.GetByIdAsync(1))
@@ -77,7 +78,7 @@ namespace CodeLeap.UnitTests
             {
                 Name = "Test",
                 Description = "Desc",
-                ImageUrl = "url"
+                ImageUrl = _imgTest
             };
 
             await _service.Create(request);
@@ -96,7 +97,7 @@ namespace CodeLeap.UnitTests
             {
                 Name = "A",
                 Description = "B",
-                ImageUrl = "C"
+                ImageUrl = _imgTest
             };
 
             Func<Task> act = async () => await _service.Update(1, request);
@@ -108,7 +109,7 @@ namespace CodeLeap.UnitTests
         [Fact]
         public async Task Delete_ShouldCallRepository_WhenProductExists()
         {
-            var product = new Product("A", "B", "C");
+            var product = new Product("A", "B", _imgTest);
 
             _repoMock
                 .Setup(x => x.GetByIdAsync(1))

@@ -27,22 +27,16 @@ namespace CodeLeap.Application.Services
 
             _logger.LogInformation("GetAll products returned {Count} items", products.Count);
 
-            return products.Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                ImageUrl = p.ImageUrl
-            }).ToList();
+            return products.Select(MapToDto).ToList();
         }
 
         public async Task<ProductDto?> GetById(int id)
         {
             _logger.LogInformation("GetById called for ProductId: {Id}", id);
 
-            var p = await _repository.GetByIdAsync(id);
+            var product = await _repository.GetByIdAsync(id);
 
-            if (p == null)
+            if (product == null)
             {
                 _logger.LogWarning("Product not found with Id: {Id}", id);
                 return null;
@@ -50,18 +44,14 @@ namespace CodeLeap.Application.Services
 
             _logger.LogInformation("Product retrieved successfully: {Id}", id);
 
-            return new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                ImageUrl = p.ImageUrl
-            };
+            return MapToDto(product);
         }
 
         public async Task Create(CreateProductRequest request)
         {
             _logger.LogInformation("Create product process started. Name: {Name}", request.Name);
+
+            ValidateCreateRequest(request);
 
             var product = new Product(
                 request.Name,
@@ -84,13 +74,7 @@ namespace CodeLeap.Application.Services
         {
             _logger.LogInformation("Update product process started for Id: {Id}", id);
 
-            var product = await _repository.GetByIdAsync(id);
-
-            if (product == null)
-            {
-                _logger.LogWarning("Update failed - product not found with Id: {Id}", id);
-                throw new KeyNotFoundException("Product not found");
-            }
+            var product = await GetExistingProductAsync(id);
 
             product.Name = request.Name;
             product.Description = request.Description;
@@ -105,17 +89,44 @@ namespace CodeLeap.Application.Services
         {
             _logger.LogInformation("Delete product process started for Id: {Id}", id);
 
-            var product = await _repository.GetByIdAsync(id);
-
-            if (product == null)
-            {
-                _logger.LogWarning("Delete failed - product not found with Id: {Id}", id);
-                throw new KeyNotFoundException("Product not found");
-            }
+            var product = await GetExistingProductAsync(id);
 
             await _repository.DeleteAsync(product);
 
             _logger.LogInformation("Product deleted successfully with Id: {Id}", id);
+        }
+
+        private async Task<Product> GetExistingProductAsync(int id)
+        {
+            var product = await _repository.GetByIdAsync(id);
+
+            if (product == null)
+            {
+                _logger.LogWarning("Operation failed - product not found with Id: {Id}", id);
+                throw new KeyNotFoundException("Product not found");
+            }
+
+            return product;
+        }
+
+        private static ProductDto MapToDto(Product product)
+        {
+            return new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                ImageUrl = product.ImageUrl
+            };
+        }
+
+        private static void ValidateCreateRequest(CreateProductRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ArgumentException("Product name is required");
+
+            if (request.Name.Length > 200)
+                throw new ArgumentException("Product name is too long");
         }
     }
 }

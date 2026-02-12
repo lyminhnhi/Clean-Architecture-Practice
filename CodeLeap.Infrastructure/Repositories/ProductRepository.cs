@@ -21,9 +21,9 @@ namespace CodeLeap.Infrastructure.Repositories
         {
             _logger.LogInformation("Getting all products with search: {Search}", search);
 
-            var query = _context.Products.AsQueryable();
+            IQueryable<Product> query = _context.Products;
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(p => p.Name.Contains(search));
             }
@@ -55,32 +55,44 @@ namespace CodeLeap.Infrastructure.Repositories
 
         public async Task AddAsync(Product product)
         {
+            EnsureNotNull(product);
+
             _logger.LogInformation("Adding new product: {Name}", product.Name);
 
             await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Product added successfully: {Name}", product.Name);
+            await SaveChangesAsync("Product added successfully: {Name}", product.Name);
         }
 
         public async Task UpdateAsync(Product product)
         {
+            EnsureNotNull(product);
+
             _logger.LogInformation("Updating product Id: {Id}", product.Id);
 
             _context.Products.Update(product);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Product updated successfully: {Id}", product.Id);
+            await SaveChangesAsync("Product updated successfully: {Id}", product.Id);
         }
 
         public async Task DeleteAsync(Product product)
         {
+            EnsureNotNull(product);
+
             _logger.LogInformation("Deleting product Id: {Id}", product.Id);
 
             _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            await SaveChangesAsync("Product deleted successfully: {Id}", product.Id);
+        }
 
-            _logger.LogInformation("Product deleted successfully: {Id}", product.Id);
+        private async Task SaveChangesAsync(string successMessage, params object[] args)
+        {
+            await _context.SaveChangesAsync();
+            _logger.LogInformation(successMessage, args);
+        }
+
+        private static void EnsureNotNull(Product product)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
         }
     }
 }

@@ -185,16 +185,38 @@ The API uses standard HTTP status codes:
 
 All errors are logged appropriately.
 
-## Trade-offs
+## Docker Support
 
-Due to time constraints, the following features were not implemented:
+The project can be easily run using Docker and Docker Compose.
 
-- Role-based authorization  
-- Pagination for product list  
-- External identity providers  
-- Docker or CI/CD pipeline  
+### Prerequisites
+- Docker Desktop installed
 
-These can be added as future improvements.
+### How to run
+
+From the root folder, execute:
+
+docker compose up --build
+
+Then open:
+
+http://localhost:5000/swagger
+
+### Services
+
+- ASP.NET Core Web API: http://localhost:5000  
+- SQL Server runs inside container and requires no local setup
+
+### Environment Variables
+
+The following variables are used in Docker:
+
+- ConnectionStrings__DefaultConnection  
+- Jwt__Key  
+- Jwt__Issuer  
+- Jwt__Audience
+
+These are preconfigured in docker-compose.yml for easy testing.
 
 ## Author
 

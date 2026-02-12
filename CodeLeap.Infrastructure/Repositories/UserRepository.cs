@@ -19,16 +19,19 @@ namespace CodeLeap.Infrastructure.Repositories
 
         public async Task AddAsync(User user)
         {
+            EnsureNotNull(user);
+
             _logger.LogInformation("Adding new user with email: {Email}", user.Email);
 
             await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("User added successfully: {Email}", user.Email);
+            await SaveChangesAsync("User added successfully: {Email}", user.Email);
         }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email cannot be empty", nameof(email));
+
             _logger.LogDebug("Querying user by email: {Email}", email);
 
             var user = await _context.Users
@@ -44,6 +47,18 @@ namespace CodeLeap.Infrastructure.Repositories
             }
 
             return user;
+        }
+
+        private async Task SaveChangesAsync(string successMessage, params object[] args)
+        {
+            await _context.SaveChangesAsync();
+            _logger.LogInformation(successMessage, args);
+        }
+
+        private static void EnsureNotNull(User user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
         }
     }
 }

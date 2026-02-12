@@ -28,8 +28,6 @@ namespace CodeLeap.API.Controllers
 
             var result = await _service.GetAll(search);
 
-            _logger.LogInformation("Returned {Count} products", result?.Count());
-
             return Ok(result);
         }
 
@@ -46,33 +44,33 @@ namespace CodeLeap.API.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation("Product found with id: {ProductId}", id);
-
             return Ok(product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _logger.LogInformation("Creating new product with name: {ProductName}", request.Name);
 
             await _service.Create(request);
 
-            _logger.LogInformation("Product created successfully: {ProductName}", request.Name);
-
-            return Ok();
+            return Created(string.Empty, null);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateProductRequest request)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _logger.LogInformation("Updating product with id: {ProductId}", id);
 
             await _service.Update(id, request);
 
-            _logger.LogInformation("Product updated successfully: {ProductId}", id);
-
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -82,9 +80,7 @@ namespace CodeLeap.API.Controllers
 
             await _service.Delete(id);
 
-            _logger.LogInformation("Product deleted successfully: {ProductId}", id);
-
-            return Ok();
+            return NoContent();
         }
     }
 }

@@ -11,3 +11,38 @@
 2026-02-12 09:58:36.504 +07:00 [INF] User logged in successfully: doremon@gmail.com
 2026-02-12 09:58:36.513 +07:00 [INF] User logged in successfully: doremon@gmail.com
 2026-02-12 09:59:10.596 +07:00 [INF] User logged out successfully
+2026-02-12 12:22:20.899 +07:00 [INF] Register attempt for email: nobita@gmail.com
+2026-02-12 12:22:20.953 +07:00 [INF] Register process started for email: nobita@gmail.com
+2026-02-12 12:22:22.566 +07:00 [WRN] User not found with email: nobita@gmail.com
+2026-02-12 12:22:22.815 +07:00 [ERR] Unhandled exception occurred while processing request: /api/Auth/register
+System.ArgumentException: Password must contain uppercase, lowercase and number
+   at CodeLeap.Application.Services.UserService.ValidatePassword(String password) in C:\Users\Admin\Desktop\CodeLeap.Assessment\CodeLeap.Application\Services\UserService.cs:line 137
+   at CodeLeap.Application.Services.UserService.Register(RegisterRequest request) in C:\Users\Admin\Desktop\CodeLeap.Assessment\CodeLeap.Application\Services\UserService.cs:line 42
+   at CodeLeap.API.Controllers.AuthController.Register(RegisterRequest request) in C:\Users\Admin\Desktop\CodeLeap.Assessment\CodeLeap.API\Controllers\AuthController.cs:line 30
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at CodeLeap.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Users\Admin\Desktop\CodeLeap.Assessment\CodeLeap.API\Middlewares\ExceptionMiddleware.cs:line 21
+2026-02-12 12:22:35.405 +07:00 [INF] Register attempt for email: nobita@gmail.com
+2026-02-12 12:22:35.410 +07:00 [INF] Register process started for email: nobita@gmail.com
+2026-02-12 12:22:35.437 +07:00 [WRN] User not found with email: nobita@gmail.com
+2026-02-12 12:22:35.851 +07:00 [INF] Adding new user with email: nobita@gmail.com
+2026-02-12 12:22:36.114 +07:00 [INF] User added successfully: nobita@gmail.com
+2026-02-12 12:22:36.117 +07:00 [INF] User registered successfully: nobita@gmail.com
+2026-02-12 12:22:36.144 +07:00 [INF] Adding new refresh token for email: nobita@gmail.com
+2026-02-12 12:22:36.196 +07:00 [INF] Refresh token added successfully for email: nobita@gmail.com
+2026-02-12 12:24:22.655 +07:00 [INF] Creating new product with name: Iphone16
+2026-02-12 12:24:22.659 +07:00 [INF] Create product process started. Name: Iphone16
+2026-02-12 12:24:22.662 +07:00 [INF] Adding new product: Iphone16
+2026-02-12 12:24:22.764 +07:00 [INF] Product added successfully: Iphone16
+2026-02-12 12:24:22.766 +07:00 [INF] Product created successfully with Name: Iphone16
