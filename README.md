@@ -1,44 +1,40 @@
-# CodeLeap Assessment
+# CodeLeap Assessment – .NET Web API
 
-This project is a technical assessment for CodeLeap built with:
-
-- .NET 8 Web API
-- Entity Framework Core
-- SQL Server
-- JWT Authentication
-- Clean Architecture
-- Unit Tests & Integration Tests
+A RESTful API built with **.NET 8** for the CodeLeap technical assessment, providing authentication, posts, and comments management.
 
 ---
 
-## Architecture
+## Features
 
-The solution is organized using Clean Architecture:
-
-- CodeLeap.API – Web API layer  
-- CodeLeap.Application – Services, DTOs  
-- CodeLeap.Domain – Entities, Interfaces  
-- CodeLeap.Infrastructure – EF Core, Repositories  
-- CodeLeap.UnitTests  
-- CodeLeap.IntegrationTests  
+- JWT Authentication  
+- CRUD for Posts and Comments  
+- Entity Framework Core + SQL Server  
+- Swagger / OpenAPI documentation  
+- Clean Architecture structure  
+- Unit & Integration Tests  
 
 ---
 
-## Prerequisites
+## Technologies
 
-- .NET 8 SDK
-- SQL Server (Local or Express)
-- Visual Studio 2022
+- .NET 8, ASP.NET Core Web API  
+- Entity Framework Core  
+- SQL Server  
+- JWT Bearer Authentication  
+- Swagger / Swashbuckle  
+- xUnit  
 
 ---
 
-## Database Setup
+## Setup Instructions
 
-Update connection string in:
+### Requirements
+- .NET 8 SDK  
+- SQL Server  
 
-`appsettings.json`
+### Configure Database
 
-Example:
+Edit `appsettings.json`:
 
 ```json
 "ConnectionStrings": {
@@ -46,40 +42,105 @@ Example:
 }
 ```
 
-Run migrations:
+Apply migrations:
 
-```
-Update-Database
+```bash
+dotnet ef database update
 ```
 
 ---
 
-## Running the project
+## Running the Project
 
-1. Open solution in Visual Studio  
-2. Set **CodeLeap.API** as Startup Project  
-3. Press **F5**  
-4. Swagger will open automatically  
+```bash
+dotnet run --project CodeLeap.API
+```
+
+Swagger UI will open automatically.
+
+---
+
+## OpenAPI Documentation
+
+Full OpenAPI document is generated using Swagger.
+
+Access at:
+
+```
+https://localhost:<port>/swagger
+```
+
+It includes:
+
+- All endpoints  
+- Request/response models  
+- Authentication requirements  
 
 ---
 
 ## Authentication
 
-- Register user:  
-  POST `/api/auth/register`
+JWT Bearer authentication is used.
 
-- Login:  
-  POST `/api/auth/login`
+### Login Flow
 
-- Use returned JWT token to access Product APIs
+1. Register:
+
+```
+POST /api/auth/register
+```
+
+2. Login:
+
+```
+POST /api/auth/login
+```
+
+Response:
+
+```json
+{ "token": "eyJhbGciOi..." }
+```
+
+3. Use token for protected APIs:
+
+```
+Authorization: Bearer <token>
+```
+
+Swagger supports authentication via the **Authorize** button.
+
+---
+
+## Architecture
+
+Clean Architecture is applied:
+
+```mermaid
+flowchart LR
+    A[Client] --> B(API Controllers)
+    B --> C(Application Layer)
+    C --> D(Domain Layer)
+    C --> E(Infrastructure - EF Core)
+    E --> F[(Database)]
+```
+
+---
+
+## Design Decisions
+
+- **Clean Architecture** → maintainable and testable structure  
+- **EF Core** → fast development with migrations  
+- **JWT** → stateless, secure authentication  
+- **Swagger/OpenAPI** → always up-to-date API documentation  
 
 ---
 
 ## Testing
 
-Run unit tests:
+Run all tests:
 
-```
+```bash
 dotnet test
 ```
 
@@ -87,5 +148,5 @@ dotnet test
 
 ## Author
 
-- Candidate: NHI
-- Date: 2026
+Minh Nhi  
+Repository: https://github.com/lyminhnhi/codeleap-assessment
