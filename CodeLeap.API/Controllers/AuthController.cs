@@ -38,15 +38,45 @@ namespace CodeLeap.API.Controllers
 
             var result = await _userService.Login(request);
 
-            if (result == null)
-            {
-                _logger.LogWarning("Login failed for email: {Email}", request.Email);
-                return Unauthorized("Invalid email or password");
-            }
-
             _logger.LogInformation("User logged in successfully: {Email}", request.Email);
 
             return Ok(result);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh(RefreshRequest request)
+        {
+            try
+            {
+                var result = await _userService.RefreshToken(request.RefreshToken);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning("Refresh token failed: {Message}", ex.Message);
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(RefreshRequest request)
+        {
+            if (string.IsNullOrEmpty(request.RefreshToken))
+                return BadRequest("Refresh token is required");
+
+            try
+            {
+                await _userService.Logout(request.RefreshToken);
+
+                _logger.LogInformation("User logged out successfully");
+
+                return Ok("Logged out");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning("Logout failed: {Message}", ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

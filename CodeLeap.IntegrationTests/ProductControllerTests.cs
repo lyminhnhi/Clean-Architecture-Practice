@@ -17,27 +17,25 @@ namespace CodeLeap.IntegrationTests
             _client = factory.CreateClient();
         }
 
-        private async Task AuthenticateAsync()
+        private async Task AuthenticateAsync(string email)
         {
             var register = new RegisterRequest
             {
-                Email = "product@gmail.com",
-                Password = "123456"
+                Email = email,
+                Password = "StrongPass123"
             };
 
             await _client.PostAsJsonAsync("/api/auth/register", register);
 
             var login = new LoginRequest
             {
-                Email = "product@gmail.com",
-                Password = "123456"
+                Email = email,
+                Password = register.Password
             };
 
-            var response = await _client.PostAsJsonAsync(
-                "/api/auth/login", login);
+            var response = await _client.PostAsJsonAsync("/api/auth/login", login);
 
-            var result = await response.Content
-                .ReadFromJsonAsync<AuthResponse>();
+            var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
 
             _client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", result.Token);
@@ -54,7 +52,7 @@ namespace CodeLeap.IntegrationTests
         [Fact]
         public async Task Create_And_Get_Product_Flow()
         {
-            await AuthenticateAsync();
+            await AuthenticateAsync("product1@gmail.com");
 
             var createRequest = new CreateProductRequest
             {
@@ -76,25 +74,37 @@ namespace CodeLeap.IntegrationTests
                 .ReadFromJsonAsync<List<ProductDto>>();
 
             products.Should().NotBeEmpty();
-            products.First().Name.Should().Be("Integration Product");
+            products.Should().Contain(p => p.Name == "Integration Product");
         }
 
         [Fact]
         public async Task Update_Product_ShouldSucceed()
         {
-            await AuthenticateAsync();
+            await AuthenticateAsync("product2@gmail.com");
 
             var createRequest = new CreateProductRequest
             {
                 Name = "Old Name",
                 Description = "Old",
-                ImageUrl = "old"
+                ImageUrl = "http://example.com/old.jpg"
             };
 
-            await _client.PostAsJsonAsync("/api/product", createRequest);
+            var createResponse = await _client.PostAsJsonAsync(
+                "/api/product", createRequest);
+
+            if (!createResponse.IsSuccessStatusCode)
+            {
+                var error = await createResponse.Content.ReadAsStringAsync();
+                throw new Exception("Create failed: " + error);
+            }
+
+            createResponse.EnsureSuccessStatusCode();
 
             var products = await _client.GetFromJsonAsync<List<ProductDto>>(
                 "/api/product");
+
+            products.Should().NotBeNull();
+            products.Should().NotBeEmpty("product should be created before update");
 
             var id = products.First().Id;
 
@@ -102,25 +112,31 @@ namespace CodeLeap.IntegrationTests
             {
                 Name = "New Name",
                 Description = "New",
-                ImageUrl = "new"
+                ImageUrl = "http://example.com/new.jpg"
             };
 
             var response = await _client.PutAsJsonAsync(
                 $"/api/product/{id}", updateRequest);
 
             response.EnsureSuccessStatusCode();
+
+            var updated = await _client.GetFromJsonAsync<ProductDto>(
+                $"/api/product/{id}");
+
+            updated.Should().NotBeNull();
+            updated.Name.Should().Be("New Name");
         }
 
         [Fact]
         public async Task Delete_Product_ShouldSucceed()
         {
-            await AuthenticateAsync();
+            await AuthenticateAsync("product3@gmail.com");
 
             var createRequest = new CreateProductRequest
             {
                 Name = "To Delete",
                 Description = "Del",
-                ImageUrl = "del"
+                ImageUrl = "http://example.com/old.jpg"
             };
 
             await _client.PostAsJsonAsync("/api/product", createRequest);
@@ -133,6 +149,11 @@ namespace CodeLeap.IntegrationTests
             var response = await _client.DeleteAsync($"/api/product/{id}");
 
             response.EnsureSuccessStatusCode();
+
+            var afterDelete = await _client.GetFromJsonAsync<List<ProductDto>>(
+                "/api/product");
+
+            afterDelete.Should().NotContain(p => p.Id == id);
         }
     }
 }

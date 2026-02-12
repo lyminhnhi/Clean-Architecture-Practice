@@ -1,5 +1,4 @@
 ﻿using CodeLeap.Application.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -37,6 +36,11 @@ namespace CodeLeap.API.Helpers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeLeap.Application\CodeLeap.Application.csproj" />
+    <ProjectReference Include="..\CodeLeap.Domain\CodeLeap.Domain.csproj" />
   </ItemGroup>
 
 </Project>

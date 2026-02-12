@@ -1,0 +1,13 @@
+2026-02-12 09:57:25.573 +07:00 [INF] Register attempt for email: doremon@gmail.com
+2026-02-12 09:57:25.609 +07:00 [INF] Register process started for email: doremon@gmail.com
+2026-02-12 09:57:26.472 +07:00 [WRN] User not found with email: doremon@gmail.com
+2026-02-12 09:57:26.691 +07:00 [INF] Adding new user with email: doremon@gmail.com
+2026-02-12 09:57:26.822 +07:00 [INF] User added successfully: doremon@gmail.com
+2026-02-12 09:57:26.826 +07:00 [INF] User registered successfully: doremon@gmail.com
+2026-02-12 09:57:26.872 +07:00 [INF] User registered successfully: doremon@gmail.com
+2026-02-12 09:58:36.266 +07:00 [INF] Login attempt for email: doremon@gmail.com
+2026-02-12 09:58:36.270 +07:00 [INF] Login attempt for email: doremon@gmail.com
+2026-02-12 09:58:36.290 +07:00 [INF] User found with email: doremon@gmail.com
+2026-02-12 09:58:36.504 +07:00 [INF] User logged in successfully: doremon@gmail.com
+2026-02-12 09:58:36.513 +07:00 [INF] User logged in successfully: doremon@gmail.com
+2026-02-12 09:59:10.596 +07:00 [INF] User logged out successfully

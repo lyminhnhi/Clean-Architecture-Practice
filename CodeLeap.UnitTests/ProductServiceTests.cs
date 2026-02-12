@@ -3,6 +3,7 @@ using CodeLeap.Application.Services;
 using CodeLeap.Domain.Entities;
 using CodeLeap.Domain.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CodeLeap.UnitTests
@@ -10,18 +11,22 @@ namespace CodeLeap.UnitTests
     public class ProductServiceTests
     {
         private readonly Mock<IProductRepository> _repoMock;
+        private readonly Mock<ILogger<ProductService>> _loggerMock;
         private readonly ProductService _service;
 
         public ProductServiceTests()
         {
             _repoMock = new Mock<IProductRepository>();
-            _service = new ProductService(_repoMock.Object);
+            _loggerMock = new Mock<ILogger<ProductService>>();
+
+            _service = new ProductService(
+                _repoMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
         public async Task GetAll_ShouldReturnListOfProducts()
         {
-            // Arrange
             var products = new List<Product>
             {
                 new Product("A", "Desc A", "urlA"),
@@ -32,10 +37,8 @@ namespace CodeLeap.UnitTests
                 .Setup(x => x.GetAllAsync(null))
                 .ReturnsAsync(products);
 
-            // Act
             var result = await _service.GetAll(null);
 
-            // Assert
             result.Should().HaveCount(2);
             result[0].Name.Should().Be("A");
         }
@@ -43,17 +46,14 @@ namespace CodeLeap.UnitTests
         [Fact]
         public async Task GetById_ShouldReturnProduct_WhenExists()
         {
-            // Arrange
             var product = new Product("A", "Desc", "url");
 
             _repoMock
                 .Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(product);
 
-            // Act
             var result = await _service.GetById(1);
 
-            // Assert
             result.Should().NotBeNull();
             result.Name.Should().Be("A");
         }
@@ -73,7 +73,6 @@ namespace CodeLeap.UnitTests
         [Fact]
         public async Task Create_ShouldCallRepository_WhenProductValid()
         {
-            // Arrange
             var request = new CreateProductRequest
             {
                 Name = "Test",
@@ -81,10 +80,8 @@ namespace CodeLeap.UnitTests
                 ImageUrl = "url"
             };
 
-            // Act
             await _service.Create(request);
 
-            // Assert
             _repoMock.Verify(x => x.AddAsync(It.IsAny<Product>()), Times.Once);
         }
 

@@ -1,4 +1,5 @@
 ﻿using CodeLeap.Domain.Common;
+using System.Text.RegularExpressions;
 
 namespace CodeLeap.Domain.Entities
 {
@@ -17,7 +18,11 @@ namespace CodeLeap.Domain.Entities
 
         public bool IsValidEmail()
         {
-            return !string.IsNullOrEmpty(Email) && Email.Contains('@');
+            if (string.IsNullOrEmpty(Email))
+                return false;
+
+            return Regex.IsMatch(Email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
     }
 }
