@@ -5,6 +5,7 @@ using CodeLeap.Application.Services;
 using CodeLeap.Domain.Interfaces;
 using CodeLeap.Infrastructure.Data;
 using CodeLeap.Infrastructure.Repositories;
+using CodeLeap.Infrastructure.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,13 +31,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     ));
 
 // Dependency Injection
+builder.Services.AddHostedService<DataSeederHostedService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IJwtHelper, JwtHelper>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
 
 builder.Services.AddControllers();
 
@@ -97,6 +100,29 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var blacklistService =
+                context.HttpContext.RequestServices
+                    .GetRequiredService<ITokenBlacklistService>();
+
+            var jti = context.Principal?
+                .FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)
+                ?.Value;
+
+            if (!string.IsNullOrEmpty(jti))
+            {
+                var isBlacklisted = await blacklistService.IsBlacklistedAsync(jti);
+                if (isBlacklisted)
+                {
+                    context.Fail("Token has been revoked");
+                }
+            }
+        }
     };
 });
 

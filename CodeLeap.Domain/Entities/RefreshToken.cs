@@ -1,8 +1,9 @@
-﻿namespace CodeLeap.Domain.Entities
+﻿using CodeLeap.Domain.Common;
+
+namespace CodeLeap.Domain.Entities
 {
-    public class RefreshToken
+    public class RefreshToken : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Token { get; set; }
         public string Email { get; set; }
         public DateTime ExpiryDate { get; set; }

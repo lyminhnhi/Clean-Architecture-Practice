@@ -47,7 +47,7 @@ namespace CodeLeap.Application.Services
             return MapToDto(product);
         }
 
-        public async Task Create(CreateProductRequest request)
+        public async Task<int> Create(CreateProductRequest request)
         {
             _logger.LogInformation("Create product process started. Name: {Name}", request.Name);
 
@@ -68,6 +68,8 @@ namespace CodeLeap.Application.Services
             await _repository.AddAsync(product);
 
             _logger.LogInformation("Product created successfully with Name: {Name}", request.Name);
+
+            return product.Id;
         }
 
         public async Task Update(int id, UpdateProductRequest request)

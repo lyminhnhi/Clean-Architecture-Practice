@@ -96,13 +96,11 @@ namespace CodeLeap.Application.Services
             return await GenerateAuthResponseAsync(new User(stored.Email, string.Empty));
         }
 
-        public async Task Logout(string refreshToken)
+        public async Task Logout(string email)
         {
-            _logger.LogInformation("Logout attempt");
+            _logger.LogInformation("Logout all sessions for {Email}", email);
 
-            await _refreshTokenRepository.RevokeAsync(refreshToken);
-
-            _logger.LogInformation("Refresh token revoked successfully");
+            await _refreshTokenRepository.RevokeAllByEmailAsync(email);
         }
 
         private async Task<AuthResponse> GenerateAuthResponseAsync(User user)
@@ -123,6 +121,21 @@ namespace CodeLeap.Application.Services
                 Email = user.Email,
                 Token = accessToken,
                 RefreshToken = refreshToken
+            };
+        }
+
+        public async Task<UserInfoResponse> GetCurrentUserAsync(string email)
+        {
+            _logger.LogInformation("Get current user info for {Email}", email);
+
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+                throw new UnauthorizedAccessException("User not found");
+
+            return new UserInfoResponse
+            {
+                Id = user.Id,
+                Email = user.Email
             };
         }
 

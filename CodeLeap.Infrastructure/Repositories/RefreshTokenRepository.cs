@@ -4,93 +4,82 @@ using CodeLeap.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-public class RefreshTokenRepository : IRefreshTokenRepository
+namespace CodeLeap.Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-    private readonly ILogger<RefreshTokenRepository> _logger;
-
-    public RefreshTokenRepository(AppDbContext context, ILogger<RefreshTokenRepository> logger)
+    public class RefreshTokenRepository : IRefreshTokenRepository
     {
-        _context = context;
-        _logger = logger;
-    }
+        private readonly AppDbContext _context;
+        private readonly ILogger<RefreshTokenRepository> _logger;
 
-    public async Task AddAsync(RefreshToken token)
-    {
-        EnsureNotNull(token);
-
-        _logger.LogInformation("Adding new refresh token for email: {Email}", token.Email);
-
-        await _context.RefreshTokens.AddAsync(token);
-        await SaveChangesAsync("Refresh token added successfully for email: {Email}", token.Email);
-    }
-
-    public async Task<RefreshToken?> GetByTokenAsync(string token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Token cannot be empty", nameof(token));
-
-        _logger.LogDebug("Querying refresh token: {Token}", token);
-
-        var entity = await _context.RefreshTokens
-            .FirstOrDefaultAsync(x => x.Token == token);
-
-        if (entity == null)
+        public RefreshTokenRepository(
+            AppDbContext context,
+            ILogger<RefreshTokenRepository> logger)
         {
-            _logger.LogWarning("Refresh token not found: {Token}", token);
+            _context = context;
+            _logger = logger;
         }
 
-        return entity;
-    }
-
-    public async Task RevokeAsync(string token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Token cannot be empty", nameof(token));
-
-        _logger.LogInformation("Revoking refresh token: {Token}", token);
-
-        var entity = await GetByTokenAsync(token);
-
-        if (entity == null)
+        public async Task AddAsync(RefreshToken token)
         {
-            _logger.LogWarning("Cannot revoke token - not found: {Token}", token);
-            return;
+            if (token == null) throw new ArgumentNullException(nameof(token));
+
+            _logger.LogDebug("Adding refresh token for email {Email}", token.Email);
+
+            await _context.RefreshTokens.AddAsync(token);
+            await _context.SaveChangesAsync();
         }
 
-        entity.IsRevoked = true;
-
-        await SaveChangesAsync("Refresh token revoked: {Token}", token);
-    }
-
-    public async Task RevokeAllByEmailAsync(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be empty", nameof(email));
-
-        _logger.LogInformation("Revoking all refresh tokens for email: {Email}", email);
-
-        var tokens = await _context.RefreshTokens
-            .Where(x => x.Email == email && !x.IsRevoked)
-            .ToListAsync();
-
-        foreach (var token in tokens)
+        public async Task<RefreshToken?> GetByTokenAsync(string token)
         {
-            token.IsRevoked = true;
+            if (string.IsNullOrWhiteSpace(token))
+                return null;
+
+            return await _context.RefreshTokens
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                    x.Token == token &&
+                    !x.IsRevoked &&
+                    x.ExpiryDate > DateTime.UtcNow);
         }
 
-        await SaveChangesAsync("All refresh tokens revoked for email: {Email}", email);
-    }
+        public async Task RevokeAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token)) return;
 
-    private async Task SaveChangesAsync(string successMessage, params object[] args)
-    {
-        await _context.SaveChangesAsync();
-        _logger.LogInformation(successMessage, args);
-    }
+            var entity = await _context.RefreshTokens
+                .FirstOrDefaultAsync(x =>
+                    x.Token == token &&
+                    !x.IsRevoked);
 
-    private static void EnsureNotNull(RefreshToken token)
-    {
-        if (token == null)
-            throw new ArgumentNullException(nameof(token));
+            if (entity == null) return;
+
+            entity.IsRevoked = true;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Refresh token revoked for email {Email}", entity.Email);
+        }
+
+        public async Task RevokeAllByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return;
+
+            var tokens = await _context.RefreshTokens
+                .Where(x =>
+                    x.Email == email &&
+                    !x.IsRevoked)
+                .ToListAsync();
+
+            if (tokens.Count == 0) return;
+
+            foreach (var token in tokens)
+            {
+                token.IsRevoked = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("All refresh tokens revoked for email {Email}", email);
+        }
     }
 }

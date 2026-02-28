@@ -1,6 +1,9 @@
 ﻿using CodeLeap.Application.DTOs.User;
 using CodeLeap.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace CodeLeap.API.Controllers
 {
@@ -9,34 +12,40 @@ namespace CodeLeap.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             IUserService userService,
+            ITokenBlacklistService tokenBlacklistService,
             ILogger<AuthController> logger)
         {
             _userService = userService;
+            _tokenBlacklistService = tokenBlacklistService;
             _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _logger.LogInformation("Register attempt for email: {Email}", request.Email);
 
             var result = await _userService.Register(request);
 
-            return Ok(result);
+            return CreatedAtAction(
+                actionName: nameof(UsersController.GetMe),
+                controllerName: "Users",
+                routeValues: null,
+                value: result
+            );
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _logger.LogInformation("Login attempt for email: {Email}", request.Email);
 
@@ -51,37 +60,34 @@ namespace CodeLeap.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                var result = await _userService.RefreshToken(request.RefreshToken);
-                return Ok(result);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _logger.LogWarning("Refresh token failed: {Message}", ex.Message);
-                return Unauthorized(ex.Message);
-            }
+            var result = await _userService.RefreshToken(request.RefreshToken);
+            return Ok(result);
         }
 
+        [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] RefreshRequest request)
+        public async Task<IActionResult> Logout()
         {
-            if (string.IsNullOrWhiteSpace(request.RefreshToken))
-                return BadRequest("Refresh token is required");
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var jti = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+            var exp = User.FindFirstValue(JwtRegisteredClaimNames.Exp);
 
-            try
-            {
-                await _userService.Logout(request.RefreshToken);
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(jti) || string.IsNullOrEmpty(exp))
+                return Unauthorized();
 
-                _logger.LogInformation("User logged out successfully");
+            var expiry = DateTimeOffset
+                .FromUnixTimeSeconds(long.Parse(exp))
+                .UtcDateTime;
 
-                return Ok("Logged out");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning("Logout failed: {Message}", ex.Message);
-                return BadRequest(ex.Message);
-            }
+            // Blacklist current access token
+            await _tokenBlacklistService.BlacklistAsync(jti, expiry);
+
+            // Revoke ALL refresh tokens of user
+            await _userService.Logout(email);
+
+            _logger.LogInformation("User {Email} logged out from all sessions", email);
+
+            return NoContent(); // 204
         }
     }
 }
