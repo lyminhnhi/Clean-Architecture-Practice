@@ -1,8 +1,4 @@
-# CodeLeap Assessment – E-commerce API
-
 ## Overview
-
-This project is a technical assessment submission for CodeLeap.  
 It is a RESTful API built with C# and .NET Core that implements a basic e-commerce backend with authentication and product management.
 
 The project demonstrates:
@@ -152,11 +148,11 @@ The project includes:
 
 ### Products
 
-- GET /api/products – Get all products  
-- GET /api/products?search= – Search products  
-- POST /api/products – Create product  
-- PUT /api/products/{id} – Update product  
-- DELETE /api/products/{id} – Delete product  
+- GET /api/product – Get all products  
+- GET /api/product?search= – Search products  
+- POST /api/product – Create product  
+- PUT /api/product/{id} – Update product  
+- DELETE /api/product/{id} – Delete product  
 
 ## Validation Rules
 
@@ -167,21 +163,7 @@ The project includes:
   - Be at least 8 characters long  
   - Contain at least one uppercase letter  
   - Contain at least one lowercase letter  
-  - Contain at least one number  
-
-### Product Validation
-
-- Name is required  
-- Image URL must be valid  
-
-## Error Handling
-
-The API uses standard HTTP status codes:
-
-- 400 – Bad Request (validation errors)  
-- 401 – Unauthorized  
-- 404 – Resource not found  
-- 500 – Internal server error  
+  - Contain at least one number
 
 All errors are logged appropriately.
 
@@ -194,27 +176,14 @@ The project can be easily run using Docker and Docker Compose.
 
 ### How to run
 
-From the root folder, execute:
+From the root folder, execute: docker compose up --build
 
-docker compose up --build
-
-Then open:
-
-http://localhost:5000/swagger
+Then open: http://localhost:5000/swagger
 
 ### Services
 
 - ASP.NET Core Web API: http://localhost:5000  
 - SQL Server runs inside container and requires no local setup
-
-### Environment Variables
-
-The following variables are used in Docker:
-
-- ConnectionStrings__DefaultConnection  
-- Jwt__Key  
-- Jwt__Issuer  
-- Jwt__Audience
 
 These are preconfigured in docker-compose.yml for easy testing.
 
